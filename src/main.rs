@@ -34,7 +34,7 @@ fn main() {
         .unwrap();
 
     match client.execute(
-        "CREATE TABLE IF NOT EXISTS log_table (
+        "CREATE TABLE IF NOT EXISTS bgp_data (
             uuid UUID PRIMARY KEY,
             elem_type VARCHAR(255),
             prefix VARCHAR(255),
@@ -83,7 +83,7 @@ fn main() {
 
     for (uuid, (elem_type, prefix, as_path, next_hop, peer_ip, min_timestamp, max_timestamp, count)) in record_map {
         match client.execute(
-            "INSERT INTO log_table (
+            "INSERT INTO bgp_data (
                 uuid, elem_type, prefix, as_path, next_hop, peer_ip,
                 min_timestamp, max_timestamp, count
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
