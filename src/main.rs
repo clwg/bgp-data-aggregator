@@ -3,6 +3,7 @@ use bgpkit_parser::BgpkitParser;
 use serde_json::json;
 use std::collections::HashMap;
 use std::env;
+use uuid::Uuid;
 
 fn main() {
     // Collect command line arguments
@@ -11,7 +12,12 @@ fn main() {
     let url = args.get(1).expect("Missing URL argument");
 
     // Create a HashMap to store records and their associated data
-    let mut record_map: HashMap<String, (f64, f64, u32)> = HashMap::new();
+    let mut record_map: HashMap<String, (f64, f64, u32, Uuid)> = HashMap::new();
+
+    let namespace_uuid = Uuid::parse_str("40689d13-36ac-4216-9c41-f02b007d46c2").unwrap(); 
+    
+    // Namespace UUID for the UUID v5 generation
+    //let namespace_uuid = Uuid::NAMESPACE_DNS;
 
     // Iterate through elements returned by BgpkitParser
     for elem in BgpkitParser::new(url).unwrap() {
@@ -27,11 +33,15 @@ fn main() {
             elem_type, elem.prefix, as_path, next_hop, peer_ip
         );
 
-        // Update or insert the min_timestamp, max_timestamp, and count for the key in the record_map
-        let (min_timestamp, max_timestamp, count) = record_map.entry(key.clone()).or_insert((
+        // Generate the UUID v5 for the key
+        let uuid5 = Uuid::new_v5(&namespace_uuid, key.as_bytes());
+
+        // Update or insert the min_timestamp, max_timestamp, count, and UUID v5 for the key in the record_map
+        let (min_timestamp, max_timestamp, count, _uuid) = record_map.entry(key.clone()).or_insert((
             elem.timestamp,
             elem.timestamp,
             0,
+            uuid5,
         ));
 
         // Update min_timestamp and max_timestamp
@@ -42,7 +52,7 @@ fn main() {
     }
 
     // Iterate through the record_map and output the final JSON objects
-    for (key, (min_timestamp, max_timestamp, count)) in record_map {
+    for (key, (min_timestamp, max_timestamp, count, uuid)) in record_map {
         // Split the key into tokens for constructing the JSON object
         let tokens: Vec<&str> = key.split('|').collect();
 
@@ -57,10 +67,10 @@ fn main() {
                 "peer_ip": tokens[4],
                 "min_timestamp": min_timestamp,
                 "max_timestamp": max_timestamp,
-                "count": count
+                "count": count,
+                "uuid": uuid.to_string()
             })
             .to_string()
         );
     }
 }
-
