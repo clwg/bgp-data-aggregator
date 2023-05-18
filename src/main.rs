@@ -43,6 +43,7 @@ fn main() {
     client
         .execute(
             "CREATE TABLE IF NOT EXISTS log_table (
+                uuid UUID PRIMARY KEY,
                 elem_type VARCHAR(255),
                 prefix VARCHAR(255),
                 as_path VARCHAR(255),
@@ -50,8 +51,7 @@ fn main() {
                 peer_ip VARCHAR(255),
                 min_timestamp FLOAT,
                 max_timestamp FLOAT,
-                count INTEGER,
-                uuid UUID
+                count INTEGER DEFAULT 0
             );",
             &[],
         )
@@ -99,7 +99,11 @@ fn main() {
             "INSERT INTO log_table (
                 elem_type, prefix, as_path, next_hop, peer_ip,
                 min_timestamp, max_timestamp, count, uuid
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            ON CONFLICT (uuid) DO UPDATE 
+            SET count = log_table.count + 1,
+                min_timestamp = LEAST(log_table.min_timestamp, EXCLUDED.min_timestamp),
+                max_timestamp = GREATEST(log_table.max_timestamp, EXCLUDED.max_timestamp)",
             &[
                 &tokens[0],
                 &tokens[1],
