@@ -40,22 +40,25 @@ fn main() {
     .unwrap();
 
     // Create table if not exists
-    client
-        .execute(
-            "CREATE TABLE IF NOT EXISTS log_table (
-                uuid UUID PRIMARY KEY,
-                elem_type VARCHAR(255),
-                prefix VARCHAR(255),
-                as_path VARCHAR(255),
-                next_hop VARCHAR(255),
-                peer_ip VARCHAR(255),
-                min_timestamp FLOAT,
-                max_timestamp FLOAT,
-                count INTEGER DEFAULT 0
-            );",
-            &[],
-        )
-        .unwrap();
+    match client.execute(
+        "CREATE TABLE IF NOT EXISTS log_table (
+            uuid UUID PRIMARY KEY,
+            elem_type VARCHAR(255),
+            prefix VARCHAR(255),
+            as_path VARCHAR(255),
+            next_hop VARCHAR(255),
+            peer_ip VARCHAR(255),
+            min_timestamp FLOAT,
+            max_timestamp FLOAT,
+            count INTEGER DEFAULT 0
+        );",
+        &[],
+    ){
+        Ok(_) => {}
+        Err(err) => {
+            eprintln!("Error creating table: {}", err);
+        }
+    }
 
     // Iterate through elements returned by BgpkitParser
     for elem in BgpkitParser::new(url).unwrap() {
@@ -121,10 +124,7 @@ fn main() {
                 // Handle success if needed
             }
             Err(err) => {
-                // Error occurred during insertion
-                // Handle the error in an appropriate way
                 eprintln!("Error inserting record: {}", err);
-                // You can choose to log the error, retry the operation, or take other actions based on your requirements.
             }
         }
     }
