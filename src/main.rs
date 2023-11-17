@@ -37,7 +37,7 @@ fn main() {
         "CREATE TABLE IF NOT EXISTS bgp_data (
             uuid UUID PRIMARY KEY,
             elem_type VARCHAR(255),
-            prefix VARCHAR(255),
+            prefix INET,
             as_path VARCHAR(255),
             next_hop VARCHAR(255),
             peer_ip VARCHAR(255),
