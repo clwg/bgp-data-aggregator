@@ -12,3 +12,7 @@ dotenv = "0.15.0"
 openssl = { version = "0.10.52", features = ["vendored"] }
 postgres = { version = "0.19.5", features = ["with-uuid-1"] }
 uuid = { version = "1.3.3", features = ["v5"] }
+ipnetwork = "0.20.0"
+rusqlite = "0.32.1"
+num-bigint = "0.4.6"
+csv = "1.3.0"
