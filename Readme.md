@@ -18,7 +18,7 @@ Example usage:
 
 The output format can be specified with a flag, the default is to a raw text file, but --jsonl, --csv and --sqlite are also available.
 
-`./target/release/bgp_data_aggregator http://archive.routeviews.org/bgpdata/2024.08/UPDATES/updates.20240801.0030.bz2 --json`
+`./target/release/bgp_data_aggregator http://archive.routeviews.org/bgpdata/2024.08/UPDATES/updates.20240801.0030.bz2 --jsonl`
 
 `./target/release/bgp_data_aggregator http://archive.routeviews.org/bgpdata/2024.08/UPDATES/updates.20240801.0030.bz2 --csv`
 
