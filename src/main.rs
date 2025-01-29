@@ -142,12 +142,26 @@ fn main() {
     for (uuid, (elem_type, prefix, start_ip_int, end_ip_int, as_path, asn, next_hop, peer_ip, min_timestamp, max_timestamp, count)) in record_map {
         if let Some(ref conn) = conn {
             conn.execute(
-                "INSERT INTO bgp_data (uuid, elem_type, prefix, start_ip, end_ip, as_path, asn, next_hop, peer_ip, min_timestamp, max_timestamp, count)
-                VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
+                "INSERT INTO bgp_data (
+                    uuid,
+                    elem_type,
+                    prefix,
+                    start_ip,
+                    end_ip,
+                    as_path,
+                    asn,
+                    next_hop,
+                    peer_ip,
+                    min_timestamp,
+                    max_timestamp,
+                    count
+                )
+                VALUES 
+                    (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
                 ON CONFLICT(uuid) DO UPDATE SET
-                count = count + 1,
-                min_timestamp = MIN(min_timestamp, excluded.min_timestamp),
-                max_timestamp = MAX(max_timestamp, excluded.max_timestamp)",
+                    count = count + 1,
+                    min_timestamp = MIN(min_timestamp, excluded.min_timestamp),
+                    max_timestamp = MAX(max_timestamp, excluded.max_timestamp)",
                 params![
                     uuid.to_string(),
                     elem_type,
